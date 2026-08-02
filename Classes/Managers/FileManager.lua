@@ -147,7 +147,7 @@ function BeardLibFileManager:LoadFileFromDB(ext, path)
 
 	local k_ext = ext:key()
 
-	blt.wren_io.invoke(BeardLib.Utils:GetNameFromModPath(BeardLib.ModPath), "AssetLoader", nil, "load", ext, path)
+	managers.dyn_resource:load(ext, path, DynamicResourceManager.DYN_RESOURCES_PACKAGE);
     Global.fm.added_files[k_ext] = Global.fm.added_files[k_ext] or {}
 	Global.fm.added_files[k_ext][path:key()] = {path = path}
 

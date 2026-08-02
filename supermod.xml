@@ -118,5 +118,4 @@
             </group>
         </group>
     </hooks>
-    <wren scripts-root="Wren" init-file="AssetLoader"/>
 </mod>
