@@ -113,16 +113,6 @@ function FileIO:ConvertScriptData(data, typ, clean)
     elseif typ == "generic_xml" then
         new_data = ScriptSerializer:from_generic_xml(data)
     elseif typ == "binary" then
-        if not isWin32 and blt and blt.scriptdata then
-			local info = blt.scriptdata.identify(data)
-            local sys32bit = blt.blt_info().arch == "x86"
-            -- If we're trying to load a 32-bit encoded file on a 64-bit encoded platform or vice-versa, convert it
-			if info.is32bit ~= sys32bit then
-                data = blt.scriptdata.recode(data, {
-                    is32bit = sys32bit,
-                })
-            end
-        end
         new_data = ScriptSerializer:from_binary(data)
     end
     return clean and BeardLib.Utils.XML:Clean(new_data) or new_data
