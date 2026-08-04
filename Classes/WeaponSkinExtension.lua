@@ -1,5 +1,3 @@
-require("lib/managers/workshop/UGCItem")
-
 WeaponSkinExtension = WeaponSkinExtension or class()
 WeaponSkinExtension.TEXTURE_FILE_TYPE = "texture"
 
