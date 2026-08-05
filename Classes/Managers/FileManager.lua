@@ -26,6 +26,7 @@ end
 
 local env_ids = Idstring("environment")
 local scene_ids = Idstring("scene")
+local object_ids = Idstring("object")
 
 function BeardLibFileManager:Process(ids_ext, ids_path, name_mt)
 	local data = {}
@@ -253,7 +254,13 @@ function BeardLibFileManager:LoadAsset(ext, path, file_path)
 		return
 	end
 
-	local load = {ext = ext:id(), path = path:id(), file_path = file_path, a = ext, b = path }
+	local ext_ids = ext:id()
+
+	if ext_ids == object_ids then -- Crashes
+		return
+	end
+
+	local load = {ext = ext_ids, path = path:id(), file_path = file_path, a = ext, b = path }
 	if managers.dyn_resource then
 		self:_LoadAsset(load)
 	else
