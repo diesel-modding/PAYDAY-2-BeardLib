@@ -2,7 +2,7 @@ BeardLibAchievementManager = BeardLibAchievementManager or BeardLib:ManagerClass
 
 function BeardLibAchievementManager:init()
     -- Support multiple user on same PC, tracking each progress
-    local user_id = Steam and Distribution:local_user_id() or EpicEntitlements and EpicEntitlements:get_account_id() or "unknown"
+    local user_id = Distribution:local_user_id() or "unknown"
     self._achievements_folder = SavePath .. "CustomAchievements/" ..tostring(user_id).."/"
     self._achievement_icons_spoofer = {}
     self._ranks = {

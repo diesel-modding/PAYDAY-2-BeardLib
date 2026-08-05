@@ -131,36 +131,31 @@ end
 
 function BeardLibAchievementMenu:InitAccount()
 	local panel = self._account_progression
-	local steam_avatar = panel:Image({texture = "guis/texture/pd2/none_icon", img_color = Color.white, w = 64, h = 64})
+	local avatar = panel:Image({texture = "guis/texture/pd2/none_icon", img_color = Color.white, w = 64, h = 64})
 	local stats = panel:Grid({
 		name = "Stats",
 		inherit_values = {offset = {0, 3}},
-		w = panel:ItemsWidth() - steam_avatar:OuterWidth() - panel:OffsetX()*2
+		w = panel:ItemsWidth() - avatar:OuterWidth() - panel:OffsetX()*2
 	})
-	local steam_name = managers.network.account:username()
 
-	if Steam and Steam.friend_avatar then
-		local large = Distribution.ProfilePictureSize_Large
+	local large = Distribution.ProfilePictureSize_Large
 
+	Distribution:request_user_profile_picture(large, Distribution:local_user_id(), function (texture)
+		avatar:SetImage(texture or "guis/textures/pd2/none_icon")
+	end)
+
+	-- TODO: Might be unecessary now
+	BeardLib:AddDelayedCall("BeardLib_Recheck_Account_Avatar", 2, function()
 		Distribution:request_user_profile_picture(large, Distribution:local_user_id(), function (texture)
-			local avatar = texture or "guis/textures/pd2/none_icon"
-			steam_avatar:SetImage(avatar)
+			if alive(avatar) then
+				avatar:SetImage(texture or "guis/textures/pd2/none_icon")
+			end
 		end)
-
-		-- TODO: Might be unecessary now
-		BeardLib:AddDelayedCall("BeardLib_Recheck_Account_Avatar", 2, function()
-			Distribution:request_user_profile_picture(large, Distribution:local_user_id(), function (texture)
-				local avatar = texture or "guis/textures/pd2/none_icon"
-				if alive(steam_avatar) then
-					steam_avatar:SetImage(avatar)
-				end
-			end)
-		end)
-	end
+	end)
 
 	stats:Divider({
-		name = "SteamName",
-		text = steam_name,
+		name = "Name",
+		text = managers.network.account:username(),
 		size = 22
 	})
 
