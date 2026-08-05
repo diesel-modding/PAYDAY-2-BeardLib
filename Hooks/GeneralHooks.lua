@@ -72,4 +72,8 @@ elseif F == "networktweakdata" then
 		end
 		return icon, texture_rect
 	end
+elseif F == "workshopmanager" then
+	Hooks:PreHook(WorkshopManager, "_init_items", "BeardLibPreInitItems", function()
+		Hooks:Call("BeardLibCreateCustomWeaponSkins")
+	end)
 end

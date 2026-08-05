@@ -123,6 +123,7 @@
                 <post hook_id="lib/setups/menusetup"/>
                 <post hook_id="lib/setups/setup"/>    
                 <post hook_id="lib/managers/localizationmanager"/>
+                <post hook_id="lib/managers/workshopmanager"/>
                 <post hook_id="lib/network/base/networkpeer"/>
                 <post hook_id="lib/tweak_data/tweakdata"/>
                 <post hook_id="lib/tweak_data/networktweakdata"/>

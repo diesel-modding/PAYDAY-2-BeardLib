@@ -34,10 +34,10 @@ function WeaponSkinModule:RegisterHook()
     self._assets_folders = self._config.skin_folder
     self._skin_design = {}
 
-    Hooks:PostHook(TweakData, "_init_pd2", self._config.id .. "_SkinData", function(tweak_self)
+    Hooks:Add("BeardLibCreateCustomWeaponSkins", self._config.id .. "_SkinData", function()
         local config = self._config
 
-        if tweak_self.blackmarket.weapon_skins[config.id] then
+        if tweak_data.blackmarket.weapon_skins[config.id] then
             self:Err("The weapon skin '%s' already exists in the tweak data table.", config.id)
             return
         end
@@ -68,7 +68,7 @@ function WeaponSkinModule:RegisterHook()
                 end
             end
 
-            tweak_self.blackmarket.weapon_skins[config.id] = table.merge({
+            tweak_data.blackmarket.weapon_skins[config.id] = table.merge({
                 color = Color("FF0000"),
                 weapon_ids = { "akm_gold" },
                 use_blacklist = true,
@@ -90,13 +90,13 @@ function WeaponSkinModule:RegisterHook()
                 custom = true
             }, config)
 
-            local wcg = tweak_self.blackmarket.weapon_color_groups
+            local wcg = tweak_data.blackmarket.weapon_color_groups
             if not table.contains(wcg, config.group_id) then
                 table.insert(wcg, config.group_id)
             end
-            table.insert(tweak_self.blackmarket.weapon_colors, config.id)
+            table.insert(tweak_data.blackmarket.weapon_colors, config.id)
         else
-            tweak_self.blackmarket.weapon_skins[config.id] = table.merge({
+            tweak_data.blackmarket.weapon_skins[config.id] = table.merge({
                 is_a_unlockable = true,
                 bonus = "recoil_p1", -- Aint gonna code a "statboost" version cause nobody would care for one. It's just to fill the table.
                 reserve_quality = true,
@@ -117,7 +117,7 @@ function WeaponSkinModule:RegisterHook()
             }, config)
         end
 
-        table.insert( tweak_self.dlc.starter_kit.content.loot_drops, {
+        table.insert( tweak_data.dlc.starter_kit.content.loot_drops, {
             type_items = "weapon_skins",
             item_entry = config.id,
             global_value = config.global_value
