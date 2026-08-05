@@ -34,6 +34,11 @@ function WeaponSkinModule:RegisterHook()
     self._assets_folders = self._config.skin_folder
     self._skin_design = {}
 
+    if not self._assets_folders or not SystemFS:exists(self._assets_folders) then
+        self._mod:Err("[WeaponSkinModule] Asset directory at '%s' doesn't exist.", self._assets_folders)
+        return
+    end
+
     Hooks:Add("BeardLibCreateCustomWeaponSkins", self._config.id .. "_SkinData", function()
         local config = self._config
 
