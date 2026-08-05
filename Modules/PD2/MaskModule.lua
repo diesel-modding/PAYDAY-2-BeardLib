@@ -5,7 +5,9 @@ function MaskModule:init(...)
         {param = "pcs", action = "no_number_indexes"},
         {param = "offsets", action = function(tbl)
             for _, v in pairs(tbl) do
-                v[2] = BeardLib.Utils:normalize_string_value(v[2])
+                if type(v) == "table" and v[2] ~= nil then
+                    v[2] = BeardLib.Utils:normalize_string_value(v[2])
+                end
             end
         end}
     })
