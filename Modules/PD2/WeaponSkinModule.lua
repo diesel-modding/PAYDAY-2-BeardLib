@@ -1,10 +1,3 @@
---[[
-
-    Maintenance by Sora (Sora#5529 on Discord).
-    Please don't spam Luffy about eventual mess caused by this module. I suck at working with BreadLib. Thank you.
-
-]]
-
 WeaponSkinModule = WeaponSkinModule or BeardLib:ModuleClass("WeaponSkin", ItemModuleBase)
 
 function WeaponSkinModule:RegisterHook()
@@ -40,22 +33,6 @@ function WeaponSkinModule:RegisterHook()
 
     self._assets_folders = self._config.skin_folder
     self._skin_design = {}
-    if self._assets_folders then
-        local skin_data = WeaponSkinExtension:new(self._assets_folders, self._config.id)
-        self._skin_design = {
-            base_gradient = skin_data:get_base_gradient(),
-            pattern_gradient = skin_data:get_pattern_gradient(),
-            pattern = skin_data:get_pattern(),
-            pattern_tweak = skin_data:get_pattern_tweak(),
-            pattern_pos = skin_data:get_pattern_pos(),
-            sticker = skin_data:get_sticker(),
-            uv_scale = skin_data:get_uv_scale(),
-            uv_offset_rot = skin_data:get_uv_offset_rot(),
-            cubemap_pattern_control = skin_data:get_cubemap_pattern_control(),
-            types = skin_data:get_types(),
-            parts = skin_data:get_parts()
-        }
-    end
 
     Hooks:PostHook(TweakData, "_init_pd2", self._config.id .. "_SkinData", function(tweak_self)
         local config = self._config
@@ -63,6 +40,23 @@ function WeaponSkinModule:RegisterHook()
         if tweak_self.blackmarket.weapon_skins[config.id] then
             self:Err("The weapon skin '%s' already exists in the tweak data table.", config.id)
             return
+        end
+
+        if self._assets_folders then
+            local skin_data = WeaponSkinExtension:new(self._assets_folders, self._config.id)
+            self._skin_design = {
+                base_gradient = skin_data:get_base_gradient(),
+                pattern_gradient = skin_data:get_pattern_gradient(),
+                pattern = skin_data:get_pattern(),
+                pattern_tweak = skin_data:get_pattern_tweak(),
+                pattern_pos = skin_data:get_pattern_pos(),
+                sticker = skin_data:get_sticker(),
+                uv_scale = skin_data:get_uv_scale(),
+                uv_offset_rot = skin_data:get_uv_offset_rot(),
+                cubemap_pattern_control = skin_data:get_cubemap_pattern_control(),
+                types = skin_data:get_types(),
+                parts = skin_data:get_parts()
+            }
         end
 
         if config.is_a_color_skin then
