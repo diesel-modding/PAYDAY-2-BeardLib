@@ -232,7 +232,7 @@ function BeardLibPackageManager:LoadConfig(directory, config, mod, settings)
                         language = "english" -- has_file requires language for localized soundbanks. As of U240.6, base game soundbanks are only in english.
                     end
                       
-                    if (from_db and DB:has(path, typ, language and {language = language})) or (not from_db and FileIO:Exists(file_path_ext)) then
+                    if (from_db and DB:has(typ, path, language and {language = language})) or (not from_db and FileIO:Exists(file_path_ext)) then
                         local load = force
                         if not load then
                             local force_if_not_loaded = NotNil(child.force_if_not_loaded, config.force_if_not_loaded, false)
