@@ -140,20 +140,9 @@ function BeardLibFileManager:AddFile(ext, path, file)
 	end
 end
 
+--- @deprecated Use LoadAsset instead, it does the same
 function BeardLibFileManager:LoadFileFromDB(ext, path)
-	if self:Has(ext, path) then
-		return
-	end
-
-	local k_ext = ext:key()
-
-	managers.dyn_resource:load(ext:id(), path:id(), DynamicResourceManager.DYN_RESOURCES_PACKAGE);
-    Global.fm.added_files[k_ext] = Global.fm.added_files[k_ext] or {}
-	Global.fm.added_files[k_ext][path:key()] = {path = path}
-
-	if k_ext == texture_key then
-		Application:reload_textures({path:id()})
-	end
+	self:LoadAsset(ext, path)
 end
 
 function BeardLibFileManager:AddFileWithCheck(ext, path, file)
@@ -233,8 +222,14 @@ function BeardLibFileManager:_LoadAsset(load)
 		else
 			BeardLib:DevLog("loaded file %s.%s", k_path, k_ext)
 		end
-		managers.dyn_resource:load(ext, path, managers.dyn_resource.DYN_RESOURCES_PACKAGE)
+
+		managers.dyn_resource:load(ext, path, DynamicResourceManager.DYN_RESOURCES_PACKAGE)
+
+		if k_ext == texture_key then
+			Application:reload_textures({path:id()})
+		end
     end
+
 end
 
 function BeardLibFileManager:_UnloadAsset(unload)
@@ -252,8 +247,13 @@ function BeardLibFileManager:_UnloadAsset(unload)
     end
 end
 
-function BeardLibFileManager:LoadAsset(ids_ext, ids_path, file_path)
-	local load = {ext = ids_ext:id(), path = ids_path:id(), file_path = file_path}
+function BeardLibFileManager:LoadAsset(ext, path, file_path)
+	if not DB:has(ext, path) and not self:Has(ext, path) then
+		BeardLib:Warn("[FileManager] Tried loading an asset %s.%s but it's not present in the DB")
+		return
+	end
+
+	local load = {ext = ext:id(), path = path:id(), file_path = file_path, a = ext, b = path }
 	if managers.dyn_resource then
 		self:_LoadAsset(load)
 	else
