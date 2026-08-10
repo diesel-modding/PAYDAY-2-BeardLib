@@ -234,10 +234,10 @@ function WorldDefinition:preload_massunit_units(data)
     end
 end
 
-Hooks:PreHook(WorldDefinition, "_create_statics_unit", "BeardLibEnsureUnitsAreLoaded", function(self, data)
-    local name_ids  = data.unit_data.name:id()
+Hooks:PreHook(WorldDefinition, "make_unit", "BeardLibEnsureUnitsAreLoaded", function(self, unit_data)
+    local name_ids  = unit_data.name:id()
     if DB:has(unit_ids, name_ids) and not PackageManager:has(unit_ids, name_ids) then
-        BeardLib:Log("[WorldDefinition] Unit %s was not loaded, dynamic resource loading it. You should add it to your add.xml", data.unit_data.name)
-        BeardLib.Managers.File:LoadFileFromDB("unit", data.unit_data.name)
+        BeardLib:Log("[WorldDefinition] Unit %s was not loaded, dynamic resource loading it. You should add it to your add.xml", unit_data.name)
+        BeardLib.Managers.File:LoadFileFromDB("unit", unit_data.name)
     end
 end)
