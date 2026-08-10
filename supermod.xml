@@ -87,6 +87,7 @@
                     <post hook_id="lib/managers/mission/elementfilter"/>
                     <post hook_id="core/lib/managers/viewport/environment/coreenvironmentmanager"/>
                     <post hook_id="lib/managers/dialogmanager"/>
+                    <post hook_id="lib/managers/group_ai_states/groupaistatebase"/>
                 </group>
                 <group :script_path="NetworkHooks.lua">
                     <post hook_id="lib/managers/crimenetmanager"/>

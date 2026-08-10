@@ -43,6 +43,14 @@ elseif F == "killzonemanager" then
 			}
 		end
 	end)
+elseif F == "groupaistatebase" then
+GroupAIStateBase.orig_beardlib_on_criminal_objective_complete = GroupAIStateBase.on_criminal_objective_complete
+function GroupAIStateBase:on_criminal_objective_complete( unit, objective )
+	if not objective then -- Fixes a crash on Hell's Nightmare, not sure if other heists are affected
+		return
+	end
+	self:orig_beardlib_on_criminal_objective_complete( unit, objective )
+end
 ----------------------------------------------------------------
 elseif F == "coreenvironmentmanager" then
 	--Sky texture code.
