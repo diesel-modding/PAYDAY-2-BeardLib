@@ -92,6 +92,7 @@
 				<class file="XML.lua"/>
 				<class file="Builders.lua"/>
 				<class file="Sync.lua"/>
+				<class file="MenuHelperPlus.lua"/>
 			</classes>
 	
 			<classes directory="Managers">

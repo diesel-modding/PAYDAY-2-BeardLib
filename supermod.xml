@@ -14,7 +14,7 @@
     <hooks>
         <post hook_id="core/lib/system/coresystem" script_path="Core.lua"/>
         <post hook_id="core/lib/setups/coreloadingsetup" script_path="CoreLoading.lua"/>
-        <post hook_id="lib/entry" script_path="Classes/Utils/Menu.lua"/>
+        <post hook_id="lib/entry" script_path="Classes/Utils/QuickMenuPlus.lua"/>
 
         <group script_path="Hooks/">
             <group :script_path="Items/" game="pd2">
