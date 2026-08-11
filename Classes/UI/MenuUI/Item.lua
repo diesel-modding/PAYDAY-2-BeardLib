@@ -1434,7 +1434,7 @@ function Item:MousePressedSelfEvent(button, x, y)
 			end
 		end
 
-		if self.on_right_click and (not self._list or self.open_list_key ~= mouse_1) then
+		if (right_click and self.on_right_click) and (not self._list or self.open_list_key ~= mouse_1) then
 			self:RunCallback(self.on_right_click)
 		end
 		return false, self.CLICKABLE
