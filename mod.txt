@@ -1,0 +1,12 @@
+{
+	"name" : "BeardLib",
+	"description" : "Library for easier script file manipulation and mod creation",
+	"author" : "GREAT BIG BUSHY BEARD & Luffy",
+	"contact" : "simon@modworkshop.net",
+	"priority" : 500,
+	"version" : "5.X",
+	"undisablable" : true,
+	"is_library" : true,
+	"color" : "0 0.44 1",
+	"image" : "Assets/guis/textures/beardlib_logo.png"
+}
