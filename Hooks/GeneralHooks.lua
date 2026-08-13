@@ -76,4 +76,8 @@ elseif F == "workshopmanager" then
 	Hooks:PreHook(WorkshopManager, "_init_items", "BeardLibPreInitItems", function()
 		Hooks:Call("BeardLibCreateCustomWeaponSkins")
 	end)
+elseif F == "musicmanager" then -- Hooked to this because it's a bit after dyn resources init
+	Hooks:PreHook(MusicManager, "init", "BeardLibDynResourceIsReady", function()
+		BeardLib.Managers.File:LoadUnloadAssets()
+	end)
 end
