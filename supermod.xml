@@ -23,6 +23,7 @@
                     <post hook_id="lib/tweak_data/dlctweakdata"/>
                     <post hook_id="lib/units/beings/player/states/playerstandard"/>
                     <post hook_id="lib/units/weapons/newraycastweaponbase"/>
+                    <post hook_id="lib/managers/workshopmanager"/>
                 </group>
                 <group :script_path="NetworkHooks.lua">
                     <post hook_id="lib/units/beings/player/huskplayermovement"/>
@@ -112,7 +113,6 @@
                 <post hook_id="lib/setups/menusetup"/>
                 <post hook_id="lib/setups/setup"/>    
                 <post hook_id="lib/managers/localizationmanager"/>
-                <post hook_id="lib/managers/workshopmanager"/>
                 <post hook_id="lib/network/base/networkpeer"/>
                 <post hook_id="lib/tweak_data/tweakdata"/>
                 <post hook_id="lib/tweak_data/networktweakdata"/>

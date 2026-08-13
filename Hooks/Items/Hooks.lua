@@ -667,4 +667,8 @@ elseif F == "dlctweakdata" then
 		}
 	end)
 ----------------------------------------------------------------
+elseif F == "workshopmanager" then
+	Hooks:PreHook(WorkshopManager, "_setup", "BeardLibPreInitItems", function()
+		Hooks:Call("BeardLibCreateCustomWeaponSkins")
+	end)
 end
