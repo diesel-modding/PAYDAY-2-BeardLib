@@ -104,7 +104,6 @@
                 <post hook_id="lib/managers/menu/scrollablepanel" :script_path="ScrollablePanel.lua"/>
                 <post hook_id="lib/managers/systemmenumanager" :script_path="Hooks.lua"/>
                 <post hook_id="lib/managers/menumanager" :script_path="Hooks.lua"/>
-                <post hook_id="core/lib/managers/coreguidatamanager" :script_path="Hooks.lua"/>
                 <post hook_id="lib/utils/easing" :script_path="Easing.lua"/>
             </group>
 
