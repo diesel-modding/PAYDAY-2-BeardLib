@@ -1,8 +1,8 @@
 {
 	"name" : "BeardLib",
-	"description" : "Library for easier script file manipulation and mod creation",
-	"author" : "GREAT BIG BUSHY BEARD & Luffy",
-	"contact" : "simon@modworkshop.net",
+	"description" : "Library for easier mod creation",
+	"author" : "Simon W, Luffy",
+	"contact" : "daniel@modworkshop.net",
 	"priority" : 500,
 	"version" : "5.X",
 	"undisablable" : true,
