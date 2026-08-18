@@ -96,7 +96,7 @@ overwrite_meta_function(PackageManager, "load", function(self, pck, ...)
 		return
 	end
 
-	self:_load(pck, ...)
+	return self:_load(pck, ...)
 end)
 
 overwrite_meta_function(PackageManager, "unload", function(self, pck)
@@ -109,7 +109,7 @@ overwrite_meta_function(PackageManager, "unload", function(self, pck)
 		return
 	end
 
-	self:_unload(pck)
+	return self:_unload(pck)
 end)
 
 overwrite_meta_function(PackageManager, "loaded", function(self, pck)
