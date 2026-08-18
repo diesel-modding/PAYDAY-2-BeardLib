@@ -10,7 +10,7 @@ function MissionElementsModule:Load()
     for _, element in ipairs(self._config) do
         if type(element) == "table" and element._meta == "element" then
             element.file = element.file or (element.name .. "Element.lua")
-            dofile(Path:Combine(directory, element.file))
+            self._mod:Dofile(Path:Combine(directory, element.file))
             Hooks:Call("BeardLibAddElement", self, directory, element)
         end
     end

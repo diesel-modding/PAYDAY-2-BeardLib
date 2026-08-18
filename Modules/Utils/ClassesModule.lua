@@ -10,7 +10,7 @@ function ClassesModule:Load(config, prev_dir)
             if c._meta == "class" then
                 local class_file = Path:Combine(dir, c.file)
                 if FileIO:Exists(class_file) then
-                    dofile(class_file)
+                    self._mod:Dofile(class_file)
                 else
                     self:Err("Class file not readable by the lua state! File: %s", class_file)
                 end

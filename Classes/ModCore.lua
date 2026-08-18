@@ -145,7 +145,7 @@ function ModCore:InitModules()
     end
 
     if not self._disabled and self._config.core_class then
-        self._core_class = dofile(Path:Combine(self.ModPath, self._config.core_class)) or self
+        self._core_class = self:Dofile(Path:Combine(self.ModPath, self._config.core_class)) or self
         --Allows to check for things before initializing the modules. Call :ModError from here only.
         if self._core_class and self._core_class.PreModuleInit then
             self._core_class:PreModuleInit()
@@ -345,6 +345,12 @@ end
 function ModCore:GetSetting(setting)
     local settings = self:GetSettings()
     return settings[setting]
+end
+
+function ModCore:Dofile(path)
+    rawset(_G, "ModInstance", self)
+    rawset(_G, "ModPath", self.ModPath)
+    dofile(path)
 end
 
 function ModCore:PreInit() end

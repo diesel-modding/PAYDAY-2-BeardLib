@@ -7,7 +7,7 @@ function ModulesModule:Load(config, prev_dir)
 	for _, moodule in ipairs(config) do
 		if moodule._meta == "module" then
 			if moodule.file then
-				dofile(Path:Combine(dir, moodule.file))
+				self._mod:Dofile(Path:Combine(dir, moodule.file))
 				local type_name = moodule.type_name
 				local object_name = moodule.name or type_name.."Module"
 
