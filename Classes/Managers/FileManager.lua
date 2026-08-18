@@ -27,6 +27,7 @@ end
 local env_ids = Idstring("environment")
 local scene_ids = Idstring("scene")
 local object_ids = Idstring("object")
+local cooked_physics_ids = Idstring("cooked_physics")
 
 function BeardLibFileManager:Process(ids_ext, ids_path, name_mt)
 	local data = {}
@@ -256,7 +257,7 @@ function BeardLibFileManager:LoadAsset(ext, path, file_path)
 
 	local ext_ids = ext:id()
 
-	if ext_ids == object_ids then -- Crashes
+	if ext_ids == cooked_physics_ids then -- Crashes
 		return
 	end
 
