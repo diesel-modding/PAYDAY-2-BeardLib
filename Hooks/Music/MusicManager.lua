@@ -435,3 +435,10 @@ Hooks:Add("GameSetupPauseUpdate", "BeardLibMusicPausedUpdate", function(t, dt)
 		managers.music:custom_update(t, dt, true)
 	end
 end)
+
+Hooks:PostHook(MusicManager, "music_ext_listen_start", "BeardLibMusicManagerExtListenStart", function(self, music_ext)
+	self:stop_custom()
+	if self:attempt_play(nil, music_ext) then
+		Global.music_manager.source:stop()
+	end
+end)
