@@ -84,7 +84,7 @@
                     <post hook_id="lib/network/base/networkpeer"/>
                     <post hook_id="lib/network/base/clientnetworksession"/>
                     <post hook_id="lib/network/base/handlers/connectionnetworkhandler"/>
-                    <post hook_id="lib/managers/menumanager/platformmanager"/>
+                    <post hook_id="lib/managers/platformmanager"/>
                     <post hook_id="lib/managers/menumanager"/>
                 </group>
                 <post hook_id="lib/network/matchmaking/networkmatchmakingsteam" :script_path="NetworkMatchmakingSteam.lua"/>
