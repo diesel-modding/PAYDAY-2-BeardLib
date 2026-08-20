@@ -13,7 +13,7 @@ function ModCore:init(config_path, load_modules)
 	self.SavePath = SavePath
     self._modules = {}
 
-    self._blt_mod = config_path:find(FrameworkBase._format) == 1
+    self._blt_mod = config_path:begins("mods/")
 
     if self:GetSetting("Enabled") == false and not self._blt_mod then
         self:ForceDisable()
@@ -23,7 +23,6 @@ function ModCore:init(config_path, load_modules)
 		local mod = BLT.Mods:GetModOwnerOfFile(ModPath)
 		if mod and not mod:IsEnabled() then
 			self:ForceDisable()
-			return
 		end
 	end
 
