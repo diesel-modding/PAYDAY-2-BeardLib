@@ -10,7 +10,7 @@
 	color="Color(0.8,0.8,0.8)"
 	auto_image_color="true"
 	mod_override_dir="assets/mod_overrides/"
-	version="5.1.1">
+	version="5.1.2">
 	<load_modules>
 		<AddFiles directory="Assets">
 			<unit path="core/units/cubemap_gizmo/cubemap_gizmo" force_if_not_loaded="true"/>
