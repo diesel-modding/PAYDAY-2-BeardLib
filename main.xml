@@ -42,6 +42,7 @@
 				<unit path="units/pd2_dlc_help/characters/npc_acc_spooky_bag/npc_acc_spooky_bag"/>
 				<unit path="units/payday2/characters/npc_acc_loot_bag_1/npc_acc_loot_bag_1"/>
 				<unit path="units/payday2/characters/npc_acc_tools_bag_1/npc_acc_tools_bag_1"/>
+				<unit path="units/dev_tools/level_tools/ai_coverpoint"/>
 			</add>
 		</AddFiles>
 		<Options build_menu="false">
