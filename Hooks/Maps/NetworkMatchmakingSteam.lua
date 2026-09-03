@@ -24,10 +24,13 @@ local orig_NetworkMatchMakingSTEAM_lobby_to_numbers = NetworkMatchMakingSTEAM._l
 function NetworkMatchMakingSTEAM:_lobby_to_numbers(lobby, ...)
 	BeardLib:DevLog("Received level: " .. tostring(lobby:key_value("level_id")))
 	BeardLib:DevLog("Received narrative: " .. tostring(lobby:key_value("job_key")))
-	if not tonumber(lobby:key_value("job_id")) then
-		lobby:set_key_value("job_id", -1) --Such a fucking weird issue..
-	end
-	local data = orig_NetworkMatchMakingSTEAM_lobby_to_numbers(self, lobby, ...)
+	local data = {} --Init an empty table
+    if not tonumber(lobby:key_value("job_id")) then -- Check for invalid job_id
+        BeardLib:DevLog("Received invalid job_id:" .. tostring(lobby:key_value("job_id")) .. "... Patching data to prevent crash.")
+        data = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0} --Patch 0 values to data to prevent errors in the lobby browser.
+    else
+        data = orig_NetworkMatchMakingSTEAM_lobby_to_numbers(self, lobby, ...) -- Call original function if job_id is valid
+    end
 	local is_key_valid = function(key) return key ~= "value_missing" and key ~= "value_pending" end
 	if is_key_valid(lobby:key_value("level_id")) or is_key_valid(lobby:key_value("job_key")) then
 		local _level_index = table.index_of(tweak_data.levels._level_index, lobby:key_value("level_id"))
