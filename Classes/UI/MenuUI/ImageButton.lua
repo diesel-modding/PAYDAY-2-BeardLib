@@ -30,7 +30,8 @@ function ImageButton:InitBasicItem()
         halign = "center",
         valign = "center",
         layer = 5,
-        wrap_mode = self.wrap_mode
+        wrap_mode = self.wrap_mode,
+        rotation = self.rotation
     })
     self.img:set_world_center(self.panel:world_center())
     self:MakeBorder()
