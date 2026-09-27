@@ -285,7 +285,9 @@ function FrameworkBase:IsModedLoaded(name)
 end
 
 function FrameworkBase:LoadMod(folder_name, directory, main_file)
-	self:Log("Loading mod %s (%s)", folder_name, directory)
+	if self._log_init then
+		self:Log("Loading mod %s (%s)", folder_name, directory)
+	end
 
 	rawset(_G, "ModPath", directory)
 	local success, mod = pcall(function() return self._mod_core:new(main_file, false) end)
