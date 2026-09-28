@@ -40,6 +40,14 @@ elseif F == "setup" then
 		BeardLib.Managers.Package:Unload()
 		Hooks:Call("BeardLibSetupUnloadPackages", self)
 	end)
+
+	-- Since beardlib unloads its custom heist packages in worlddef unload packages, this is called *after* dyn resource does its last unload
+	Hooks:PostHook(Setup, "unload_packages", "BeardLibEnsureDynResourceUnloads", function(self)
+		if managers.dyn_resource and not managers.dyn_resource:is_ready_to_close() then
+			Application:cleanup_thread_garbage()
+			managers.dyn_resource:update()
+		end
+	end)
 elseif F == "localizationmanager" then
 	-- Don't you love when you crash just for asking if this shit exist?
 	function LocalizationManager:modded_exists(str)
