@@ -46,12 +46,8 @@ function BeardLib:Init()
 	local modules_config = table.list_to_set(self._config.load_enabled_modules)
 	self:LoadModules(modules_config, modules.."Addons/")
 	self:LoadModules(modules_config, modules.."Utils/")
+	self:LoadModules(modules_config, modules.."Game/")
 
-	if BeardLib:GetGame() == "raid" then
-		self:LoadModules(modules_config, modules.."Raid/")
-	else
-		self:LoadModules(modules_config, modules.."PD2/")
-	end
 	self:LoadLocalization()
 
 	for _, init in pairs(self._classes_to_init) do
@@ -443,25 +439,23 @@ Hooks:Add("MenuManagerOnOpenMenu", "BeardLibShowErrors", function(self, menu)
 			BeardLib:ShowErrorsDialog()
 		end
 
-		if (BeardLib:GetGame() or "pd2") == "pd2" then
-			-- Add Crime.Net custom maps only button to the filters
-			function MenuCallbackHandler:beardlib_custom_maps_only(item)
-				local val = item:value() == "on"
-				BeardLib.Options:SetValue("CustomMapsOnlyFilter", val)
-				Global.game_settings.custom_maps_only = val
-				managers.network.matchmake:search_lobby(managers.network.matchmake:search_friends_only())
-			end
-
-
-			local node = MenuHelperPlus:GetNode(nil, "crimenet_filters")
-			MenuHelperPlus:AddToggle({
-				id = "beardlib_custom_maps_only",
-				title = "beardlib_custom_maps_only",
-				node = node,
-				value = Global.game_settings.custom_maps_only,
-				position = 13,
-				callback = "beardlib_custom_maps_only",
-			})
+		-- Add Crime.Net custom maps only button to the filters
+		function MenuCallbackHandler:beardlib_custom_maps_only(item)
+			local val = item:value() == "on"
+			BeardLib.Options:SetValue("CustomMapsOnlyFilter", val)
+			Global.game_settings.custom_maps_only = val
+			managers.network.matchmake:search_lobby(managers.network.matchmake:search_friends_only())
 		end
+
+
+		local node = MenuHelperPlus:GetNode(nil, "crimenet_filters")
+		MenuHelperPlus:AddToggle({
+			id = "beardlib_custom_maps_only",
+			title = "beardlib_custom_maps_only",
+			node = node,
+			value = Global.game_settings.custom_maps_only,
+			position = 13,
+			callback = "beardlib_custom_maps_only",
+		})
 	end
 end)

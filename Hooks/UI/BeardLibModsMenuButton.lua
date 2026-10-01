@@ -1,39 +1,23 @@
 Hooks:Add("MenuManagerInitialize", "BeardLibModsManagerButtons", function()
-    if BeardLib:GetGame() ~= "raid" then
-        local node = MenuHelperPlus:GetNode(nil, "options")
-        if not node:item("BeardLibMenu") then
-            MenuCallbackHandler.BeardLibMenu = ClassClbk(BeardLib.Menus.Mods, "SetEnabled", true)
-            MenuHelperPlus:AddButton({
-                id = "BeardLibMenu",
-                title = "beardlib_mods_manager",
-                node = node,
-                position = managers.menu._is_start_menu and 9 or 7,
-                callback = "BeardLibMenu",
-            })
+    local node = MenuHelperPlus:GetNode(nil, "options")
+    if not node:item("BeardLibMenu") then
+        MenuCallbackHandler.BeardLibMenu = ClassClbk(BeardLib.Menus.Mods, "SetEnabled", true)
+        MenuHelperPlus:AddButton({
+            id = "BeardLibMenu",
+            title = "beardlib_mods_manager",
+            node = node,
+            position = managers.menu._is_start_menu and 9 or 7,
+            callback = "BeardLibMenu",
+        })
 
-            MenuCallbackHandler.BeardLibAchievementsMenu = ClassClbk(BeardLib.Menus.Achievement, "SetEnabled", true)
-            MenuHelperPlus:AddButton({
-                id = "BeardLibAchievementsMenu",
-                title = "beardlib_achieves_title",
-                node = node,
-                position = managers.menu._is_start_menu and 9 or 7,
-                callback = "BeardLibAchievementsMenu",
-            })
-        end
-    else
-        RaidMenuHelper:MakeClbk("BeardLibMenu", ClassClbk(BeardLib.Menus.Mods, "SetEnabled", true))
-        RaidMenuHelper:MakeClbk("BeardLibAchievementsMenu", ClassClbk(BeardLib.Menus.Achievement, "SetEnabled", true))
-
-        RaidMenuHelper:InjectButtons("raid_menu_left_options", "network", {
-            {
-                text = managers.localization:text("beardlib_mods_manager"),
-                callback = "BeardLibMenu"
-            },
-            {
-                text = managers.localization:text("beardlib_achieves_title"),
-                callback = "BeardLibAchievementsMenu"
-            }
-		}, true)
+        MenuCallbackHandler.BeardLibAchievementsMenu = ClassClbk(BeardLib.Menus.Achievement, "SetEnabled", true)
+        MenuHelperPlus:AddButton({
+            id = "BeardLibAchievementsMenu",
+            title = "beardlib_achieves_title",
+            node = node,
+            position = managers.menu._is_start_menu and 9 or 7,
+            callback = "BeardLibAchievementsMenu",
+        })
     end
 end)
 
@@ -126,12 +110,6 @@ end
 
 local mouse_press = BLTNotificationsGui.mouse_pressed
 function BLTNotificationsGui:mouse_pressed(o, button, x, y)
-    if tonumber(button) then -- Handle RAID difference
-		y = x
-		x = button
-		button = o
-	end
-
     if not self._enabled or button ~= Idstring("0") then
         return
     end
