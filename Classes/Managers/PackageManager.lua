@@ -133,16 +133,6 @@ BeardLibPackageManager.EXT_CONVERT = {dds = "texture", png = "texture", tga = "t
 
 local CP_DEFAULT = BeardLib:GetPath() .. "Assets/units/default_cp.cooked_physics"
 function BeardLibPackageManager:LoadConfig(directory, config, mod, settings)
-    if not (SystemFS and SystemFS.exists) then
-        self:Err("SystemFS does not exist! Custom packages cannot function without this! Do you have an outdated game version?")
-        return
-	end
-
-	if not DB.create_entry then
-		self:Err("Create entry function does not exist, cannot add files.")
-		return
-	end
-
     local skip_use_clbk, temp = false, false
     if type(settings) == "table" then
         skip_use_clbk = settings.skip_use_clbk
@@ -159,9 +149,6 @@ function BeardLibPackageManager:LoadConfig(directory, config, mod, settings)
         end
     end
 
-    local ingame = Global.level_data and Global.level_data.level_id ~= nil
-    local inmenu = not ingame
-
     local game = BeardLib:GetGame() or "pd2"
 
     local loading = {}
@@ -169,129 +156,26 @@ function BeardLibPackageManager:LoadConfig(directory, config, mod, settings)
         if type(child) == "table" then
             local typ = child._meta
             local path = child.path
-            local from_db = NotNil(child.from_db, config.from_db)
-            local script_data_type = NotNil(child.script_data_type, config.script_data_type)
             local use_clbk = child.use_clbk or child.load_clbk
+            local c_game = child.game or config.game
+
             if use_clbk and mod then
                 use_clbk = mod:StringToCallback(use_clbk) or nil
             end
 
-            local c_game = child.game or config.game
-
             if (not c_game or c_game == game) and (not use_clbk or use_clbk(path, typ)) then
                 if typ == UNIT_LOAD or typ == ADD then
-                    self:LoadConfig(child.directory and Path:Combine(directory, child.directory) or directory, child, mod, {skip_use_clbk = true, temp = temp})
+                    local next_dir = child.directory and Path:Combine(directory, child.directory) or directory
+                    self:LoadConfig(next_dir, child, mod, {
+                        skip_use_clbk = true,
+                        temp = temp
+                    })
                 elseif BeardLibPackageManager.UNIT_SHORTCUTS[typ] then
-                    local ids_path = Idstring(path)
-                    local file_path = child.full_path or Path:Combine(directory, child.file_path or path)
-                    local auto_cp = NotNil(child.auto_cp, config.auto_cp, true)
-                    self:AddFileWithCheck(UNIT_IDS, ids_path, file_path.."."..UNIT)
-                    if auto_cp then
-                        self:AddFileWithCheck(COOKED_PHYSICS_IDS, ids_path, CP_DEFAULT)
-                    end
-
-                    self:AddFileWithCheck(MODEL_IDS, ids_path, file_path.."."..MODEL)
-                    self:AddFileWithCheck(OBJECT_IDS, ids_path, file_path.."."..OBJECT)
-
-                    for load_type, load in pairs(BeardLibPackageManager.UNIT_SHORTCUTS[typ]) do
-                        local type_ids = load_type:id()
-                        if load_type ~= TEXTURE then
-                            self:AddFileWithCheck(type_ids, Idstring(path), file_path.."."..load_type)
-                        end
-                        if type(load) == "table" then
-                            for _, suffix in pairs(load) do
-                                self:AddFileWithCheck(type_ids, Idstring(path..suffix), file_path..suffix.."."..load_type)
-                            end
-                        end
-                    end
+                    self:LoadConfigUnitShortcutNode(child, directory, config)
                 elseif BeardLibPackageManager.TEXTURE_SHORTCUTS[typ] then
-                    path = Path:Normalize(path)
-                    local file_path = child.full_path or Path:Combine(directory, config.file_path or path)
-                    for _, suffix in pairs(BeardLibPackageManager.TEXTURE_SHORTCUTS[typ]) do
-                        Managers.File:AddFileWithCheck(TEXTURE_IDS, Idstring(path..suffix), file_path..suffix.."."..TEXTURE)
-                    end
+                    self:LoadConfigTextureShortcutNode(child, directory, config)
                 elseif typ and path then
-                    path = Path:Normalize(path)
-                    local ids_ext = Idstring(BeardLibPackageManager.EXT_CONVERT[typ] or typ)
-                    local inner_directory = config.inner_directory
-					local ids_path = inner_directory and Idstring(Path:Combine(inner_directory, path)) or Idstring(path)
-					local file_path = child.full_path or Path:Combine(directory, config.file_path or path)
-                    local file_path_ext = file_path.."."..typ
-                    local auto_cp = NotNil(child.auto_cp, config.auto_cp, false)
-                    local force = NotNil(child.force, config.force, true)
-                    local reload = NotNil(child.reload, config.reload, false)
-                    child.unload = NotNil(child.unload, config.unload, true)
-
-                    local is_unit = ids_ext == UNIT_IDS
-                    local dyn_load_game = NotNil(child.load_in_game, config.load_in_game, false)
-                    local dyn_load_menu = NotNil(child.load_in_menu, config.load_in_menu, false)
-                    local dyn_load = NotNil(child.load, config.load, false)
-
-                    local language
-                    if typ == "bnk" and from_db and not DB:has(path, typ) then 
-                        language = "english" -- has_file requires language for localized soundbanks. As of U240.6, base game soundbanks are only in english.
-                    end
-                      
-                    if (from_db and DB:has(typ, path, language and {language = language})) or (not from_db and FileIO:Exists(file_path_ext)) then
-                        local load = force
-                        if not load then
-                            local force_if_not_loaded = NotNil(child.force_if_not_loaded, config.force_if_not_loaded, false)
-                            if force_if_not_loaded then
-                                load = not PackageManager:has(ids_ext, ids_path)
-                            else
-                                load = not DB:has(ids_ext, ids_path)
-                            end
-                        end
-                        if load then
-                            if is_unit then
-								if child.include_default then --Old
-									Managers.File:AddFileWithCheck(MODEL_IDS, ids_path, file_path.."."..MODEL)
-									Managers.File:AddFileWithCheck(OBJECT_IDS, ids_path, file_path.."."..OBJECT)
-									Managers.File:AddFileWithCheck(MAT_CONFIG_IDS, ids_path, file_path.."."..MAT_CONFIG)
-									Managers.File:AddFile(COOKED_PHYSICS_IDS, ids_path, CP_DEFAULT)
-                                end
-                                if auto_cp then
-                                    Managers.File:AddFile(COOKED_PHYSICS_IDS, ids_path, CP_DEFAULT)
-                                end
-                            end
-
-                            if typ == "bnk" and not DB:has(ids_ext, ids_path) then
-                              if blt.asset_db.register_custom_soundbank then
-                                  blt.asset_db.register_custom_soundbank(path)
-                              end
-                            end
-                            if typ == "stream" and not DB:has(ids_ext, ids_path) then
-                              if blt.asset_db.register_custom_streamed_wem then
-                                  local wem_id = child.wem_id or path:match("[^/]*$")
-
-                                  if wem_id then
-                                    blt.asset_db.register_custom_streamed_wem(wem_id, path)
-                                  end
-                              end
-                            end
-
-                            if from_db then
-                                Managers.File:LoadFileFromDB(typ, path)
-                            elseif script_data_type then
-                                Managers.File:ScriptReplaceFile(ids_ext, ids_path, file_path_ext, {type = script_data_type, add = true})
-                            else
-                                Managers.File:AddFile(ids_ext, ids_path, file_path_ext)
-                            end
-                            if reload then
-                                PackageManager:reload(ids_ext, ids_path)
-                            end
-                            if dyn_load or (dyn_load_game and ingame) or (dyn_load_menu and not inmenu) then
-                                table.insert(loading, {ids_ext, ids_path, file_path_ext})
-                            end
-                            if child.early_load then
-                                Managers.File:ForceEarlyLoad(ids_ext, ids_path, file_path_ext)
-                            end
-                        end
-                    elseif from_db then
-                        self:Err("File does not exist in database! %s", tostring(path))
-                    else
-                        self:Err("File does not exist! %s", tostring(file_path_ext))
-                    end
+                    self:LoadConfigNode(child, directory, config, loading)
                 elseif typ ~= "auto_generate" then
                     self:Err("Node in %s does not contain a definition for both type and path", tostring(directory))
                 end
@@ -303,10 +187,139 @@ function BeardLibPackageManager:LoadConfig(directory, config, mod, settings)
         table.insert(self.unload_on_restart, config)
     end
 
-    --Simon: For some reason this needs to be here, instead of loading in the main loop or the game will go into a hissy fit
-    --Luffy: Most likely the reason behind this is that some assets are not added yet.
+    -- Since added files could contain dependecies that aren't loaded yet,
+    -- we want to ensure they are first all added and then try to dyn resource load them
     for _, file in pairs(loading) do
         Managers.File:LoadAsset(unpack(file))
+    end
+end
+
+function BeardLibPackageManager:LoadConfigNode(node, directory, config, loading)
+    local typ = node._meta
+    local path = node.path
+    local ingame = Global.level_data and Global.level_data.level_id ~= nil
+    local inmenu = not ingame
+    local from_db = NotNil(node.from_db, config.from_db)
+    local script_data_type = NotNil(node.script_data_type, config.script_data_type)
+
+    path = Path:Normalize(path) or path
+    local ids_ext = Idstring(BeardLibPackageManager.EXT_CONVERT[typ] or typ)
+    local inner_directory = config.inner_directory
+    local ids_path = inner_directory and Idstring(Path:Combine(inner_directory, path)) or Idstring(path)
+    local file_path = node.full_path or Path:Combine(directory, config.file_path or path)
+    local file_path_ext = file_path.."."..typ
+    local auto_cp = NotNil(node.auto_cp, config.auto_cp, false)
+    local force = NotNil(node.force, config.force, true)
+    local reload = NotNil(node.reload, config.reload, false)
+    node.unload = NotNil(node.unload, config.unload, true)
+    local dyn_load_game = NotNil(node.load_in_game, config.load_in_game, false)
+    local dyn_load_menu = NotNil(node.load_in_menu, config.load_in_menu, false)
+    local dyn_load = NotNil(node.load, config.load, false)
+
+    local is_unit = ids_ext == UNIT_IDS
+    local language
+    if typ == "bnk" and from_db and not DB:has(path, typ) then 
+        language = "english" -- has_file requires language for localized soundbanks. As of U240.6, base game soundbanks are only in english.
+    end
+
+    if (from_db and DB:has(typ, path, language and {language = language})) or (not from_db and FileIO:Exists(file_path_ext)) then
+        local load = force
+        if not load then
+            local force_if_not_loaded = NotNil(node.force_if_not_loaded, config.force_if_not_loaded, false)
+            if force_if_not_loaded then
+                load = not PackageManager:has(ids_ext, ids_path)
+            else
+                load = not DB:has(ids_ext, ids_path)
+            end
+        end
+        if load then
+            if is_unit then
+                if node.include_default then --Old
+                    Managers.File:AddFileWithCheck(MODEL_IDS, ids_path, file_path.."."..MODEL)
+                    Managers.File:AddFileWithCheck(OBJECT_IDS, ids_path, file_path.."."..OBJECT)
+                    Managers.File:AddFileWithCheck(MAT_CONFIG_IDS, ids_path, file_path.."."..MAT_CONFIG)
+                    Managers.File:AddFile(COOKED_PHYSICS_IDS, ids_path, CP_DEFAULT)
+                end
+                if auto_cp then
+                    Managers.File:AddFile(COOKED_PHYSICS_IDS, ids_path, CP_DEFAULT)
+                end
+            end
+
+            if typ == "bnk" and not DB:has(ids_ext, ids_path) then
+                if blt.asset_db.register_custom_soundbank then
+                    blt.asset_db.register_custom_soundbank(path)
+                end
+            end
+            if typ == "stream" and not DB:has(ids_ext, ids_path) then
+                if blt.asset_db.register_custom_streamed_wem then
+                    local wem_id = node.wem_id or path:match("[^/]*$")
+
+                    if wem_id then
+                    blt.asset_db.register_custom_streamed_wem(wem_id, path)
+                    end
+                end
+            end
+
+            if from_db then
+                Managers.File:LoadFileFromDB(typ, path)
+            elseif script_data_type then
+                Managers.File:ScriptReplaceFile(ids_ext, ids_path, file_path_ext, {type = script_data_type, add = true})
+            else
+                Managers.File:AddFile(ids_ext, ids_path, file_path_ext)
+            end
+            if reload then
+                PackageManager:reload(ids_ext, ids_path)
+            end
+            if dyn_load or (dyn_load_game and ingame) or (dyn_load_menu and not inmenu) then
+                table.insert(loading, {ids_ext, ids_path, file_path_ext})
+            end
+            if node.early_load then
+                Managers.File:ForceEarlyLoad(ids_ext, ids_path, file_path_ext)
+            end
+        end
+    elseif from_db then
+        self:Err("File does not exist in database! %s", tostring(path))
+    else
+        self:Err("File does not exist! %s", tostring(file_path_ext))
+    end
+end
+
+function BeardLibPackageManager:LoadConfigUnitShortcutNode(node, directory, config)
+    local typ = node._meta
+    local path = node.path
+    local ids_path = path:id()
+
+    local file_path = node.full_path or Path:Combine(directory, node.file_path or path)
+    local auto_cp = NotNil(node.auto_cp, config.auto_cp, true)
+    self:AddFileWithCheck(UNIT_IDS, ids_path, file_path.."."..UNIT)
+    if auto_cp then
+        self:AddFileWithCheck(COOKED_PHYSICS_IDS, ids_path, CP_DEFAULT)
+    end
+
+    self:AddFileWithCheck(MODEL_IDS, ids_path, file_path.."."..MODEL)
+    self:AddFileWithCheck(OBJECT_IDS, ids_path, file_path.."."..OBJECT)
+
+    for load_type, load in pairs(BeardLibPackageManager.UNIT_SHORTCUTS[typ]) do
+        local type_ids = load_type:id()
+        if load_type ~= TEXTURE then
+            self:AddFileWithCheck(type_ids, ids_path, file_path.."."..load_type)
+        end
+        if type(load) == "table" then
+            for _, suffix in pairs(load) do
+                self:AddFileWithCheck(type_ids, Idstring(path..suffix), file_path..suffix.."."..load_type)
+            end
+        end
+    end
+end
+
+function BeardLibPackageManager:LoadConfigTextureShortcutNode(node, directory, config)
+    local typ = node._meta
+    local path = node.path
+
+    path = Path:Normalize(path)
+    local file_path = node.full_path or Path:Combine(directory, config.file_path or path)
+    for _, suffix in pairs(BeardLibPackageManager.TEXTURE_SHORTCUTS[typ]) do
+        Managers.File:AddFileWithCheck(TEXTURE_IDS, Idstring(path..suffix), file_path..suffix.."."..TEXTURE)
     end
 end
 
@@ -331,75 +344,99 @@ function BeardLibPackageManager:UnloadConfig(config)
         if type(child) == "table" then
             local typ = child._meta
             local path = child.path
+
             if typ == UNIT_LOAD or typ == ADD then
                 self:UnloadConfig(child)
             elseif BeardLibPackageManager.UNIT_SHORTCUTS[typ] then
-                local function unload(ids_ext, ids_path)
-                    if DB:has(ids_ext, ids_path) then
-                        if child.unload ~= false then
-                            Managers.File:UnloadAsset(ids_ext, ids_path)
-                        end
-                        Managers.File:RemoveFile(ids_ext, ids_path)
-                    end
-                end
-                
-                path = Path:Normalize(path)
-                local ids_path = Idstring(path)
-                local auto_cp = NotNil(child.auto_cp, config.auto_cp, true)
-
-                unload(UNIT_IDS, ids_path)
-                if auto_cp then
-                    unload(COOKED_PHYSICS_IDS, ids_path)
-                end
-                
-                unload(MODEL_IDS, ids_path)
-                unload(OBJECT_IDS, ids_path)
-
-                for load_type, load in pairs(BeardLibPackageManager.UNIT_SHORTCUTS[typ]) do
-                    local type_ids = load_type:id()
-                    if load_type ~= TEXTURE then
-                        unload(type_ids, Idstring(path))
-                    end
-                    if type(load) == "table" then
-                        for _, suffix in pairs(load) do
-                            unload(type_ids, Idstring(path..suffix))
-                        end
-                    end
-                end
+                self:UnloadConfigUnitShortcutNode(child, config)
             elseif BeardLibPackageManager.TEXTURE_SHORTCUTS[typ] then
-                path = Path:Normalize(path)
-                for _, suffix in pairs(BeardLibPackageManager.TEXTURE_SHORTCUTS[typ]) do
-                    local ids_path = Idstring(path..suffix)
-                    if DB:has(TEXTURE_IDS, ids_path) then
-                        if child.unload ~= false then
-                            Managers.File:UnloadAsset(TEXTURE_IDS, ids_path)
-                        end
-                        Managers.File:RemoveFile(TEXTURE_IDS, ids_path)
-                    end
-                end
+                self:UnloadConfigTextureShortcutNode(child, config)
             elseif typ and path then
-                path = Path:Normalize(path)
-                if typ == "bnk" and blt.asset_db.unregister_custom_soundbank then
-                  blt.asset_db.unregister_custom_soundbank(path)
-                end
-                if typ == "stream" and blt.asset_db.unregister_custom_streamed_wem then
-                  local wem_id = child.wem_id or path:match("[^/]*$")
-                  if wem_id then
-                    blt.asset_db.unregister_custom_streamed_wem(wem_id)
-                  end
-                end
-                local ids_ext = Idstring(self.EXT_CONVERT[typ] or typ)
-                local ids_path = Idstring(path)
-                if DB:has(ids_ext, ids_path) then
-                    if child.unload ~= false then
-                        Managers.File:UnloadAsset(ids_ext, ids_path)
-                    end
-                    Managers.File:RemoveFile(ids_ext, ids_path)
-                end
+                self:UnloadConfigNode(child)
             else
                 self:Err("Some node does not contain a definition for both type and path")
             end
         end
+    end
+end
+
+function BeardLibPackageManager:UnloadConfigUnitgShortcutNode(node, config)
+    local typ = node._meta
+    local path = node.path
+    local ids_path = Idstring(path)
+    local auto_cp = NotNil(node.auto_cp, node.auto_cp, true)
+
+    path = Path:Normalize(path) or path
+
+    local function unload(ids_ext, ids_path)
+        if DB:has(ids_ext, ids_path) then
+            if node.unload ~= false then
+                Managers.File:UnloadAsset(ids_ext, ids_path)
+            end
+            Managers.File:RemoveFile(ids_ext, ids_path)
+        end
+    end
+
+    unload(UNIT_IDS, ids_path)
+    if auto_cp then
+        unload(COOKED_PHYSICS_IDS, ids_path)
+    end
+
+    unload(MODEL_IDS, ids_path)
+    unload(OBJECT_IDS, ids_path)
+
+    for load_type, load in pairs(BeardLibPackageManager.UNIT_SHORTCUTS[typ]) do
+        local type_ids = load_type:id()
+        if load_type ~= TEXTURE then
+            unload(type_ids, Idstring(path))
+        end
+        if type(load) == "table" then
+            for _, suffix in pairs(load) do
+                unload(type_ids, Idstring(path..suffix))
+            end
+        end
+    end
+end
+
+function BeardLibPackageManager:UnloadConfigTextureShortcutNode(node, config)
+    local typ = node._meta
+    local path = node.path
+
+    path = Path:Normalize(path) or path
+
+    for _, suffix in pairs(BeardLibPackageManager.TEXTURE_SHORTCUTS[typ]) do
+        local ids_path = Idstring(path..suffix)
+        if DB:has(TEXTURE_IDS, ids_path) then
+            if node.unload ~= false then
+                Managers.File:UnloadAsset(TEXTURE_IDS, ids_path)
+            end
+            Managers.File:RemoveFile(TEXTURE_IDS, ids_path)
+        end
+    end
+end
+
+function BeardLibPackageManager:UnloadConfigNode(node, config)
+    local typ = node._meta
+    local path = node.path
+
+    path = Path:Normalize(path) or path
+
+    if typ == "bnk" and blt.asset_db.unregister_custom_soundbank then
+        blt.asset_db.unregister_custom_soundbank(path)
+    end
+    if typ == "stream" and blt.asset_db.unregister_custom_streamed_wem then
+        local wem_id = node.wem_id or path:match("[^/]*$")
+        if wem_id then
+        blt.asset_db.unregister_custom_streamed_wem(wem_id)
+        end
+    end
+    local ids_ext = Idstring(self.EXT_CONVERT[typ] or typ)
+    local ids_path = Idstring(path)
+    if DB:has(ids_ext, ids_path) then
+        if node.unload ~= false then
+            Managers.File:UnloadAsset(ids_ext, ids_path)
+        end
+        Managers.File:RemoveFile(ids_ext, ids_path)
     end
 end
 
