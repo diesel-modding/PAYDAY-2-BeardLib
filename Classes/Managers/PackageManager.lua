@@ -360,7 +360,7 @@ function BeardLibPackageManager:UnloadConfig(config)
     end
 end
 
-function BeardLibPackageManager:UnloadConfigUnitgShortcutNode(node, config)
+function BeardLibPackageManager:UnloadConfigUnitShortcutNode(node, config)
     local typ = node._meta
     local path = node.path
     local ids_path = Idstring(path)
