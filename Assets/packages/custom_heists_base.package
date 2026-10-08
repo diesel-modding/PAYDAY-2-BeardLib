@@ -1,0 +1,32 @@
+<package>
+    <!-- Includes assets which are required by heists generally, instead of including them in every map, we just load them once here -->
+	<streaming win32="texture" ps3="texture" x360="texture" xb1="texture" ps4="texture"/>
+
+    <physic_effects>
+        <physic_effect name="physic_effects/push_sphere"/>
+    </physic_effects>
+
+    <units>
+        <unit name="core/units/run_sequence_dummy/run_sequence_dummy"/>
+        <unit name="units/dev_tools/mission_elements/point_interaction/interaction_dummy"/>
+        <unit name="units/dev_tools/mission_elements/point_interaction/interaction_dummy_nosync"/>
+        <unit name="units/payday2/props/gen_prop_lazer_blaster_dome/gen_prop_lazer_blaster_dome"/>
+    
+        <!-- NPC acc stuff -->
+        <unit name="units/payday2/characters/npc_acc_canvas_bag_1/npc_acc_canvas_bag_1"/>
+        <unit name="units/payday2/characters/npc_acc_safe_wpn_1/npc_acc_safe_wpn_1"/>
+        <unit name="units/pd2_dlc_jerry/characters/npc_acc_parachute_1/npc_acc_parachute_1"/>
+        <unit name="units/pd2_dlc_peta/characters/npc_acc_goat_bag_1/npc_acc_goat_bag_1"/>
+        <unit name="units/payday2/characters/npc_acc_safe_ovk_1/npc_acc_safe_ovk_1"/>
+        <unit name="units/payday2/characters/npc_acc_explosives_bag_1/npc_acc_explosives_bag_1"/>
+        <unit name="units/payday2/characters/npc_acc_cage_bag_1/npc_acc_cage_bag_1"/>
+        <unit name="units/payday2/characters/npc_acc_tools_bag_large_1/npc_acc_tools_bag_large_1"/>
+        <unit name="units/payday2/characters/npc_acc_body_bag_1/npc_acc_body_bag_1"/>
+        <unit name="units/pd2_dlc_help/characters/npc_acc_spooky_bag/npc_acc_spooky_bag"/>
+        <unit name="units/payday2/characters/npc_acc_loot_bag_1/npc_acc_loot_bag_1"/>
+        <unit name="units/payday2/characters/npc_acc_tools_bag_1/npc_acc_tools_bag_1"/>
+        <unit name="core/units/nav_surface/nav_surface"/>
+        <unit name="units/dev_tools/level_tools/ai_coverpoint"/>
+    </units>
+
+</package>

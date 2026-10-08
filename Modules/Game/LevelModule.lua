@@ -148,6 +148,9 @@ end
 function LevelModule:AddLevelDataToTweak(l_self)
     local id = tostring(self._config.id)
 
+    local packages = self._config.packages or self._config.custom_packages or {}
+    table.insert(packages, 1, "packages/custom_heists_base")
+
     l_self[id] = table.merge(clone(self._config), {
         name_id = self._config.name_id or ("heist_" .. id .. "_name"),
         briefing_id = self._config.brief_id or ("heist_" .. id .. "_brief"),
@@ -156,7 +159,7 @@ function LevelModule:AddLevelDataToTweak(l_self)
         intro_event = self._config.intro_event or "nothing",
         outro_event = self._config.outro_event or "nothing",
         music = self._config.music or "heist",
-        custom_packages = self._config.packages or self._config.custom_packages,
+        custom_packages = packages,
         mod_path = self._mod.ModPath,
         custom = true
     })
