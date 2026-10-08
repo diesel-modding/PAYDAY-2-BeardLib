@@ -8,6 +8,9 @@ WorldDefinition = WorldDefinition or CoreWorldDefinition.WorldDefinition
 local WorldDefinition_init = WorldDefinition.init
 function WorldDefinition:init(...)
     WorldDefinition_init(self, ...)
+
+    self._forced_loaded_units = {}
+
     if self._ignore_spawn_list then
         self._ignore_spawn_list[Idstring("units/dev_tools/level_tools/ai_coverpoint"):key()] = true
     end
@@ -68,6 +71,11 @@ function WorldDefinition:unload_packages(...)
             self._custom_loaded_packages = {}
         end
     end
+
+    for unit in pairs(self._forced_loaded_units) do
+        BeardLib.Managers.File:UnloadAsset("unit", unit)
+    end
+
     if not BeardLib.current_level and self._continent_packages then
         WorldDefinitionunload_packages(self, ...)
     end
@@ -236,6 +244,9 @@ Hooks:PreHook(WorldDefinition, "make_unit", "BeardLibEnsureUnitsAreLoaded", func
     local name_ids  = unit_data.name:id()
     if DB:has(unit_ids, name_ids) and not PackageManager:has(unit_ids, name_ids) then
         BeardLib:Log("[WorldDefinition] Unit %s was not loaded, dynamic resource loading it. You should add it to your add.xml", unit_data.name)
-        BeardLib.Managers.File:LoadFileFromDB("unit", unit_data.name)
+
+        self._forced_loaded_units[unit_data.name] = true
+
+        BeardLib.Managers.File:LoadAsset("unit", unit_data.name)
     end
 end)
