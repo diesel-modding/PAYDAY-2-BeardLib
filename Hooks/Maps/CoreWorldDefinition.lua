@@ -31,7 +31,6 @@ function WorldDefinition:_load_world_package(...)
     if Global.level_data then
         local level_tweak = _G.tweak_data.levels[Global.level_data.level_id]
         if level_tweak then
-            self._has_package = not not level_tweak.package
             if level_tweak.custom_packages then
                 self._custom_loaded_packages = self._custom_loaded_packages or {}
                 for _, package in ipairs(level_tweak.custom_packages) do
