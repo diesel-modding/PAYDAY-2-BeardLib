@@ -220,9 +220,9 @@ function BeardLibFileManager:_LoadAsset(load)
 		local k_ext = ext:key()
 		local k_path = path:key()
 		if load.file_path then
-			BeardLib:DevLog("loaded file %s", tostring(load.file_path))
+			BeardLib:DevLog("Load file %s", tostring(load.file_path))
 		else
-			BeardLib:DevLog("loaded file %s.%s", k_path, k_ext)
+			BeardLib:DevLog("Load file %s.%s", k_path, k_ext)
 		end
 
 		managers.dyn_resource:load(ext, path, DynamicResourceManager.DYN_RESOURCES_PACKAGE)
@@ -292,11 +292,11 @@ function BeardLibFileManager:Update(t, dt)
 end
 
 function BeardLibFileManager:LoadUnloadAssets()
-	for _, load in pairs(self._files_to_load) do
-		self:_LoadAsset(load)
-	end
-
 	for _, unload in pairs(self._files_to_unload) do
 		self:_UnloadAsset(unload)
+	end
+
+	for _, load in pairs(self._files_to_load) do
+		self:_LoadAsset(load)
 	end
 end
