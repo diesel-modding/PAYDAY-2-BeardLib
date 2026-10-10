@@ -6,7 +6,7 @@
         <post hook_id="lib/entry" script_path="Classes/Utils/QuickMenuPlus.lua"/>
 
         <group script_path="Hooks/">
-            <group :script_path="Items/" game="pd2">
+            <group :script_path="Items/">
                 <group :script_path="Hooks.lua">
                     <post hook_id="lib/managers/weaponfactorymanager"/>
                     <post hook_id="lib/managers/blackmarketmanager"/>
@@ -56,7 +56,7 @@
                 <post hook_id="lib/network/base/networkpeer" :script_path="NetworkPeer.lua"/>
             </group>
 
-            <group :script_path="Maps/" game="pd2">
+            <group :script_path="Maps/">
                 <group :script_path="Hooks.lua">
                     <post hook_id="lib/managers/missionmanager"/>
                     <post hook_id="lib/managers/killzonemanager"/>
@@ -91,7 +91,7 @@
                 <post hook_id="core/lib/utils/dev/editor/coreworlddefinition" :script_path="CoreWorldDefinition.lua"/>
             </group>
 
-            <group :script_path="Music/" game="pd2">
+            <group :script_path="Music/">
                 <group :script_path="Hooks.lua">
                     <post hook_id="lib/units/beings/player/playerdamage"/>
                     <post hook_id="lib/managers/dialogmanager"/>
