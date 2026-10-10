@@ -105,11 +105,11 @@ function BLTNotificationsGui:mouse_moved(o, x, y)
             return true, "link"
         end
     end
-    return mouse_move(self, x, y)
+    return mouse_move(self, o, x, y)
 end
 
 local mouse_press = BLTNotificationsGui.mouse_pressed
-function BLTNotificationsGui:mouse_pressed(o, button, x, y)
+function BLTNotificationsGui:mouse_pressed(button, x, y)
     if not self._enabled or button ~= Idstring("0") then
         return
     end
