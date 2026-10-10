@@ -2,19 +2,11 @@
 
 --As dumb as it is, it's the only way I found to make it work.
 function math.rot_to_quat(rot)
-	local t = ScriptSerializer:to_custom_xml({x = rot})
-	local tbl = t:match('x="(.+)"'):split(" ")
-    return {
-        tonumber(tbl[1]),
-        tonumber(tbl[2]),
-        tonumber(tbl[3]),
-        tonumber(tbl[4]),
-    }
+    return { rot:raw() }
 end
 
 function math.quat_to_rot(x, y, z, w)
-	local t = ScriptSerializer:from_custom_xml('<table x="'..x.." "..y.." "..z.." "..w..'"/>')
-	return t.x
+	return Rotation(x,y,z,w)
 end
 
 function mrotation.copy(rot)
